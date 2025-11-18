@@ -1,0 +1,215 @@
+openapi: 3.0.3
+info:
+  title: Pizza Day API
+  description: API для системи замовлення піци
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+    description: Локальний сервер розробки
+
+paths:
+  /pizzas:
+    get:
+      summary: Отримати список піц
+      responses:
+        '200':
+          description: Успішне отримання списку піц
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PizzaResponse'
+    post:
+      summary: Створити нову піцу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePizzaRequest'
+      responses:
+        '201':
+          description: Піца успішно створена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PizzaResponse'
+        '400':
+          description: Помилка валідації
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /pizzas/{id}:
+    get:
+      summary: Отримати піцу по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успішне отримання піци
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PizzaResponse'
+        '404':
+          description: Піца не знайдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    put:
+      summary: Оновити піцу
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePizzaRequest'
+      responses:
+        '200':
+          description: Піца успішно оновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PizzaResponse'
+        '400':
+          description: Помилка валідації
+        '404':
+          description: Піца не знайдена
+    
+    delete:
+      summary: Видалити піцу
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Піца успішно видалена
+        '404':
+          description: Піца не знайдена
+
+  /health:
+    get:
+      summary: Перевірка здоров'я сервісу
+      responses:
+        '200':
+          description: Сервіс працює
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "ok"
+
+components:
+  schemas:
+    CreatePizzaRequest:
+      type: object
+      required:
+        - name
+        - price
+        - ingredients
+      properties:
+        name:
+          type: string
+          example: "Маргарита"
+        description:
+          type: string
+          example: "Класична піца з томатами та моцарелою"
+        price:
+          type: number
+          format: decimal
+          example: 199.00
+        ingredients:
+          type: array
+          items:
+            type: string
+          example: ["томатний соус", "моцарела", "базилік"]
+        size:
+          type: string
+          enum: [SMALL, MEDIUM, LARGE, FAMILY]
+          example: "MEDIUM"
+
+    UpdatePizzaRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: decimal
+        ingredients:
+          type: array
+          items:
+            type: string
+        size:
+          type: string
+          enum: [SMALL, MEDIUM, LARGE, FAMILY]
+
+    PizzaResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "pizza-123"
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: decimal
+        ingredients:
+          type: array
+          items:
+            type: string
+        size:
+          type: string
+        isAvailable:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "ValidationError"
+        code:
+          type: string
+          example: "NAME_REQUIRED"
+        message:
+          type: string
+          example: "Name is required"
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string

@@ -47,3 +47,94 @@
 - `PizzaNotFoundException` - доменна помилка
 
 ### Напрямок залежностей
+api/ → service/ → domain/
+
+
+**Правило:** Залежності можуть йти тільки від зовнішніх шарів до внутрішніх. Внутрішні шари не мають знати про зовнішні.
+
+### Заборонені зв'язки
+
+#### ❌ **Заборонено:**
+
+1. **API Layer → Domain Layer напряму**
+   ```java
+   // ❌ НЕПРАВИЛЬНО
+   @RestController
+   public class PizzaController {
+       @Autowired
+       private PizzaRepository repository; // Прямий доступ до domain
+       
+       public void someMethod() { 
+           Pizza pizza = new Pizza(...); // Пряме створення domain об'єктів
+   
+       }
+   }
+2. **Service Layer → API Layer**
+   // ❌ НЕПРАВИЛЬНО
+    @Service
+    public class PizzaService {
+        @Autowired
+        private PizzaController controller; // Зворотна залежність
+    }
+3. **Domain Layer → будь-який зовнішній шар**
+   // ❌ НЕПРАВИЛЬНО
+    public class Pizza {
+        @Autowired
+        private PizzaService service; // Domain не знає про сервіси
+    }
+4. **Прямий доступ до бази даних з API Layer**
+   // ❌ НЕПРАВИЛЬНО
+    @RestController
+    public class PizzaController {
+        @Autowired
+        private JdbcTemplate jdbcTemplate; // Прямий доступ до БД
+    }
+5. **Міжмодульні прямі залежності**
+   // ❌ НЕПРАВИЛЬНО
+    @Service
+    public class OrderService {
+        @Autowired
+        private PizzaRepository pizzaRepo; // Прямий доступ до репозиторію іншого модуля
+    }
+
+✅ Дозволено:
+1. **API → Service (через інтерфейси)**
+   // ✅ ПРАВИЛЬНО
+    @RestController
+    public class PizzaController {
+        private final PizzaService pizzaService; // → Service Layer ✅
+    }
+2. **Service → Domain (створення та використання сутностей)**
+   // ✅ ПРАВИЛЬНО
+    @Service
+    public class PizzaService {
+        public Pizza createPizza(CreatePizzaRequest request) {
+            Pizza pizza = new Pizza(...); // ← Domain Layer ✅
+            // бізнес-логіка з використанням pizza
+        }
+    }
+3. **Service → Repository (доступ до даних через інтерфейси)**
+   // ✅ ПРАВИЛЬНО
+    @Service
+    public class PizzaService {
+        private final PizzaRepository repository; // → Data Layer ✅
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   

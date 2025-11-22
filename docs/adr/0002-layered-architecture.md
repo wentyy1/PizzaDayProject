@@ -70,26 +70,31 @@ api/ → service/ → domain/
        }
    }
 2. **Service Layer → API Layer**
+    ```java
    // ❌ НЕПРАВИЛЬНО
     @Service
     public class PizzaService {
         @Autowired
         private PizzaController controller; // Зворотна залежність
     }
-3. **Domain Layer → будь-який зовнішній шар**
+4. **Domain Layer → будь-який зовнішній шар**
+    ```java
    // ❌ НЕПРАВИЛЬНО
     public class Pizza {
         @Autowired
         private PizzaService service; // Domain не знає про сервіси
     }
-4. **Прямий доступ до бази даних з API Layer**
+   
+6. **Прямий доступ до бази даних з API Layer**
+    ```java
    // ❌ НЕПРАВИЛЬНО
     @RestController
     public class PizzaController {
         @Autowired
         private JdbcTemplate jdbcTemplate; // Прямий доступ до БД
     }
-5. **Міжмодульні прямі залежності**
+8. **Міжмодульні прямі залежності**
+    ```java
    // ❌ НЕПРАВИЛЬНО
     @Service
     public class OrderService {
@@ -99,12 +104,14 @@ api/ → service/ → domain/
 
 ✅ Дозволено:
 1. **API → Service (через інтерфейси)**
+    ```java
    // ✅ ПРАВИЛЬНО
     @RestController
     public class PizzaController {
         private final PizzaService pizzaService; // → Service Layer ✅
     }
-2. **Service → Domain (створення та використання сутностей)**
+3. **Service → Domain (створення та використання сутностей)**
+    ```java
    // ✅ ПРАВИЛЬНО
     @Service
     public class PizzaService {
@@ -113,7 +120,8 @@ api/ → service/ → domain/
             // бізнес-логіка з використанням pizza
         }
     }
-3. **Service → Repository (доступ до даних через інтерфейси)**
+5. **Service → Repository (доступ до даних через інтерфейси)**
+    ```java
    // ✅ ПРАВИЛЬНО
     @Service
     public class PizzaService {

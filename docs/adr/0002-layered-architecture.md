@@ -127,22 +127,3 @@ api/ → service/ → domain/
     public class PizzaService {
         private final PizzaRepository repository; // → Data Layer ✅
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   

@@ -37,7 +37,7 @@ DELETE /api/pizzas/{id} # Видалити піцу
 - **timestamp (string))** - час виникнення помилки (ISO 8601)
 - **path (string))** - шлях запиту, що викликав помилку
 
-Політика HTTP Status Codes
+### Політика HTTP Status Codes
 ✅ Успішні відповіді:
 - **200 OK** - успішне виконання GET, PUT, PATCH
 - **201 Created** - успішне створення ресурсу (POST)

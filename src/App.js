@@ -1,7 +1,9 @@
+// ...existing code...
 import React from "react";
 import Header from "./component/Header";
 import Footer from "./component/Footer";
 import Items from "./component/Items";
+import OrdersPage from './component/OrdersPage'
 
 class App extends React.Component {
   constructor(props) {
@@ -10,23 +12,33 @@ class App extends React.Component {
       order: [],
       items: [], // Пустий масив, дані будемо завантажувати з API
       loading: true,
-      error: null
+      error: null,
+      currentPage: 'home'
     };
     this.addToOrder = this.addToOrder.bind(this);
     this.deleteToOrder = this.deleteToOrder.bind(this);
+    this.handleNavigate = this.handleNavigate.bind(this);
+    this.handleOrderPlaced = this.handleOrderPlaced.bind(this);
+    this.handleChangeQuantity = this.handleChangeQuantity.bind(this);
   }
 
   // Додаємо метод для завантаження даних з API
   componentDidMount() {
     this.loadItemsFromAPI();
   }
+   handleChangeQuantity(id, qty) {
+    const q = Number(qty) || 1;
+    this.setState(prev => ({
+      order: prev.order.map(it => it.id === id ? { ...it, qty: q < 1 ? 1 : q } : it)
+    }));
+  }
 
   // Метод для завантаження піцц з бекенду
   loadItemsFromAPI = async () => {
     try {
       this.setState({ loading: true, error: null });
-      const response = await fetch('http://localhost:3001/items');
-      
+ 
+       const response = await fetch('http://localhost:3001/items');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -57,30 +69,59 @@ class App extends React.Component {
     }
   }
 
+  handleNavigate(page) {
+    this.setState({ currentPage: page });
+  }
+
+  handleOrderPlaced(orderResult) {
+    // Очистити кошик та перейти на головну
+    this.setState({ order: [], currentPage: 'home' });
+    console.log('Order placed', orderResult);
+  }
+
+  
   render() {
-    const { items, order, loading, error } = this.state;
+    const { items, order, loading, error, currentPage } = this.state;
 
     return (
       <div className="wrapper">
-        <Header order={order} onDelete={this.deleteToOrder} />
-        
-        {loading && (
-          <div className="loading-message">
-            <p>Завантаження меню...</p>
-          </div>
+        <Header
+          order={order}
+          onDelete={this.deleteToOrder}
+          onNavigate={this.handleNavigate}
+          onChangeQuantity={this.handleChangeQuantity}  // <--- передаємо навігацію
+        />
+
+        {currentPage === 'orders' ? (
+          <OrdersPage
+            key={order.length}
+            order={order}
+            onDelete={this.deleteToOrder}
+            onBack={() => this.handleNavigate('home')}
+            onOrderPlaced={this.handleOrderPlaced}
+            onChangeQuantity={this.handleChangeQuantity}
+          />
+        ) : (
+          <>
+            {loading && (
+              <div className="loading-message">
+                <p>Завантаження меню...</p>
+              </div>
+            )}
+
+            {error && (
+              <div className="error-message">
+                <p>{error}</p>
+                <button onClick={this.loadItemsFromAPI}>Спробувати знову</button>
+              </div>
+            )}
+
+            {!loading && !error && (
+              <Items items={items} onAdd={this.addToOrder} />
+            )}
+          </>
         )}
-        
-        {error && (
-          <div className="error-message">
-            <p>{error}</p>
-            <button onClick={this.loadItemsFromAPI}>Спробувати знову</button>
-          </div>
-        )}
-        
-        {!loading && !error && (
-          <Items items={items} onAdd={this.addToOrder} />
-        )}
-        
+
         <Footer />
       </div>
     );
@@ -91,13 +132,15 @@ class App extends React.Component {
   }
 
   addToOrder(item) {
-    let isInArray = false;
-    this.state.order.forEach(el => {
-      if (el.id === item.id)
-        isInArray = true;
-    });
-    if (!isInArray)
-      this.setState({ order: [...this.state.order, item] });
+    // якщо товар вже є — підвищуємо qty на 1
+    const existing = this.state.order.find(el => el.id === item.id)
+    if (existing) {
+      this.setState(prev => ({
+        order: prev.order.map(el => el.id === item.id ? { ...el, qty: (Number(el.qty) || 1) + 1 } : el)
+      }))
+    } else {
+      this.setState({ order: [...this.state.order, { ...item, qty: 1 }] });
+    }
   }
 }
 

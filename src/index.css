@@ -166,6 +166,70 @@ main button:hover{
   transform: scale(1.1);
 } 
 
+/* Стилі для меню акаунта */
+/* ...existing code... */
+
+.account-button {
+  margin-left: 20px;
+  font-size: 22px;
+  cursor: pointer;
+  float: right;
+  color: #333;
+  transition: color 0.2s ease;
+}
+.account-button:hover { color: #e74c3c; }
+.account-button.active { color: #e74c3c; }
+
+.user-panel {
+  position: absolute;
+  top: 70px;
+  right: 80px; /* зсуньте щоб не перекривати кошик */
+  width: 260px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  z-index: 1001;
+}
+
+.user-top {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.user-info strong { display: block; font-size: 1em; color: #2c3e50; }
+.user-email { font-size: 0.85em; color: #7f8c8d; }
+
+.user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.user-actions button {
+  padding: 8px 10px;
+  border: none;
+  background: #ff4d4d;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.user-actions button:hover { background: #e60000; transform: translateY(-1px); }
+
 
 footer{
   margin-top: 100px;
@@ -226,6 +290,7 @@ footer{
 .shop-cart-button.active {
   color: #e74c3c;
 }
+
 
 .cart-count {
   position: absolute;
@@ -370,3 +435,53 @@ footer{
   background: #ffeaea;
   border-radius: 30%;
 }
+header .btn_cart {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px 0;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+ .btn_beack {
+  margin: 0px 0 0 94%;
+  margin-bottom: 25px;
+  padding: 8px 16px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+ .btn_beack:hover {
+  background: #c0392b;
+}
+.btn_next  {
+  margin-top: 15px;
+  width: 100%;
+  padding: 13px 16px;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+ /* qty controls */
+.qty-control { display:flex; align-items:center; gap:8px; }
+.qty-btn {
+  width:30px; height:30px; border:1px solid #ddd; background:#fff; border-radius:6px; cursor:pointer; font-weight:700;
+}
+.qty-btn:hover { background:#f5f5f5; }
+.qty-value { min-width:28px; text-align:center; display:inline-block; font-weight:600; }
